@@ -8,14 +8,16 @@ object TrackService extends PostgresConnection {
 
   def rebuildLongTrack(events: Seq[ListenEvent], minSeconds: Int): Seq[Track] = {
 
-    events
+    val trackToRebuild = events
       .map(event => (event, event.endAt - event.startAt))
       .filter(eventWithDuration => eventWithDuration._2 >= minSeconds)
+
+    trackToRebuild
       .map { trackWithDuration =>
         val longTrackId = trackWithDuration._1.trackId
-        val resultSet: ResultSet = selectTrack(longTrackId)
-        val title = resultSet.getString("title")
-        val artist = resultSet.getString("artist")
+        val track = selectTrack(longTrackId)
+        val title = track.getString("title")
+        val artist = track.getString("artist")
         Track(longTrackId, title, artist)
       }
   }
