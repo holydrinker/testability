@@ -1,6 +1,7 @@
 package holydrinker.testability.core
 
 import holydrinker.testability.models.{ListenEvent, Track}
+import holydrinker.testability.repository.TrackRepository
 
 object TrackService
     extends TrackSelectionSupport
@@ -8,12 +9,13 @@ object TrackService
 
   def rebuildLongTrack(
       events: Seq[ListenEvent],
-      minSeconds: Int
+      minSeconds: Int,
+      trackRepository: TrackRepository
   ): Seq[Track] = {
 
     val longEvents = selectLongEvents(events, minSeconds)
 
-    tracksFromEvents(longEvents)
+    tracksFromEvents(longEvents, trackRepository)
 
   }
 

@@ -1,7 +1,8 @@
 package holydrinker.testability
 
-import holydrinker.testability.core.{PostgresConnection, TrackRebuildSupport}
+import holydrinker.testability.core.TrackRebuildSupport
 import holydrinker.testability.models.{ListenEvent, Track}
+import holydrinker.testability.repository.TrackRepository
 import org.scalatest.funsuite.AnyFunSuite
 
 class TrackRebuildSupportSuite
@@ -14,10 +15,17 @@ class TrackRebuildSupportSuite
       ListenEvent(1000, 0, 100)
     )
 
-    val actual = tracksFromEvents(events)
+    val trackName = "best of you"
+    val artistName = "foo fighters"
+
+    val trackRepository = new TrackRepository {
+      override def getTrack(trackId: Int): Track = Track(trackId, trackName, artistName)
+    }
+
+    val actual = tracksFromEvents(events, trackRepository)
 
     val expected = Seq(
-      Track(1000, "best of you", "foo fighters")
+      Track(1000, trackName, artistName)
     )
 
     assert(actual == expected)
