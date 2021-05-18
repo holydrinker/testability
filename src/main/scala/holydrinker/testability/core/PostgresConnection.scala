@@ -1,5 +1,6 @@
 package holydrinker.testability.core
 
+
 import java.sql.{Connection, DriverManager}
 import java.util.Properties
 
@@ -16,4 +17,5 @@ trait PostgresConnection {
     props.setProperty("password", "password")
     DriverManager.getConnection(url, props)
   }
+
 }

@@ -6,8 +6,7 @@ import org.scalatest.funsuite.AnyFunSuite
 
 class TrackRebuildSupportSuite
     extends AnyFunSuite
-    with TrackRebuildSupport
-    with PostgresConnection {
+    with TrackRebuildSupport {
 
   test("track rebuild support base case") {
 
@@ -15,7 +14,7 @@ class TrackRebuildSupportSuite
       ListenEvent(1000, 0, 100)
     )
 
-    val actual = tracksFromEvents(events, postgres)
+    val actual = tracksFromEvents(events)
 
     val expected = Seq(
       Track(1000, "best of you", "foo fighters")

@@ -2,31 +2,19 @@ package holydrinker.testability.core
 
 import holydrinker.testability.models.{ListenEvent, Track}
 
-import java.sql.ResultSet
+object TrackService
+    extends TrackSelectionSupport
+    with TrackRebuildSupport {
 
-object TrackService extends PostgresConnection {
+  def rebuildLongTrack(
+      events: Seq[ListenEvent],
+      minSeconds: Int
+  ): Seq[Track] = {
 
-  def rebuildLongTrack(events: Seq[ListenEvent], minSeconds: Int): Seq[Track] = {
+    val longEvents = selectLongEvents(events, minSeconds)
 
-    val trackToRebuild = events
-      .map(event => (event, event.endAt - event.startAt))
-      .filter(eventWithDuration => eventWithDuration._2 >= minSeconds)
+    tracksFromEvents(longEvents)
 
-    trackToRebuild
-      .map { trackWithDuration =>
-        val longTrackId = trackWithDuration._1.trackId
-        val track = selectTrack(longTrackId)
-        val title = track.getString("title")
-        val artist = track.getString("artist")
-        Track(longTrackId, title, artist)
-      }
-  }
-
-  private def selectTrack(trackId: Int): ResultSet = {
-    val statement = postgres.createStatement()
-    val resultSet = statement.executeQuery(s"select * from tracks where trackId = $trackId;")
-    resultSet.next()
-    resultSet
   }
 
 }
