@@ -1,0 +1,27 @@
+Introduzione, motivation dietro il workshop ed expected takeaways OK
+
+MODELING TIP 1 - Pipelines hide complexity OK
+Si parte subito con il codice di una classe che ha due responsabilità (perché da nabbi si vogliono mettere in pipe 2000 operazioni per la bella sintassi di scala)
+e si scrivono insieme dei test che funzionano e si guarda poi la coverage, funziona. OK
+
+Si parla del primo principo solid e si fa notare che la classe fa due cose, quindi si splitta in due componenti OK
+
+MODELING TIP - Always isolate data access layer OK
+
+MODELING TIP 2 - Traits save testing OK
+Composition over inheritance. Tratis are good not only for the mixing capabilities.
+Una delle due componenti accedeva ad un database tramite un object. Far vedere perchè dovrebbe essere un trait -> possiamo passarlo come parametro e in test possiamo crearne una versione fake.
+
+MODELING TIP 3 - Mock or not to mock? (config)
+Uno di questi metodi ha sempre preso come input una Config molto semplice (ad esempio con due campi) ed è sempre stato facile replicarla nei test 
+Gonfiamo questa config in un qualcosa di molto più grosso, diventa difficile replicarla nei test, anche perché ogni volta che la config cambia dobbiamo cambiare pure i test. Quindi dobbiamo mockarla perché a noi servono sempre e solo gli stessi 2 campi 
+Ok funziona pure questo, però la necessità di mockarla è sintomo di bad design. La funzione  che prende la config in realtà dovrebbe prendere in input solo i due parametri utilizzati 
+
+MODELING TIP 4 - Use value objects in functions contract
+Bene, risolto. Ma se domani mi accorgo che invece di due parametri, me ne servono 4 dalla config? Devo modificare la firma del metodo, che cambierà ogni volta che mi serve un metodo in più o un metodo in meno 
+Cosa faccio? Creo una case class MyMethodParams che utilizzo come una sorta di transfer object per passare i parametri alla mia funzione. La classe è costruita tramite un companion object che prende la config e crea il mio oggetto come lo voglio io. La firma del mio metodo non cambia più. Certo, ogni volta che serviranno dei nuovi parametri comuque il codice da qualche parte cambierà, ma cambierà la forma degli oggetti, e non il loro comportamento. La semantica ad alto livello rimane la stessa ed è più facile ragionare sugli oggetti di dominio e su cosa fanno 
+
+MODELING TIP 5 - Unit vs Integration: the endless debeat
+Questa roba ci ha fatto togliere via il mocking, ma allora quando mockare? E soprattutto quando fare mocking e quando fare integration test? 
+Conclusioni 
+ 

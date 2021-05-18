@@ -2,12 +2,9 @@ package holydrinker.testability.core
 
 import holydrinker.testability.models.{ListenEvent, Track}
 
-import java.sql.{Connection, DriverManager, ResultSet}
-import java.util.Properties
+import java.sql.ResultSet
 
-object TrackService {
-
-  private val postgres = getConnection()
+object TrackService extends PostgresConnection {
 
   def rebuildLongTrack(events: Seq[ListenEvent], minSeconds: Int): Seq[Track] = {
 
@@ -16,27 +13,18 @@ object TrackService {
       .filter(eventWithDuration => eventWithDuration._2 >= minSeconds)
       .map { trackWithDuration =>
         val longTrackId = trackWithDuration._1.trackId
-        val resultSet: ResultSet = selectAllTrakcs()
-        resultSet.next()
+        val resultSet: ResultSet = selectTrack(longTrackId)
         val title = resultSet.getString("title")
         val artist = resultSet.getString("artist")
         Track(longTrackId, title, artist)
       }
   }
 
-  private def getConnection(databaseName: Option[String] = None): Connection = {
-    classOf[org.postgresql.Driver]
-    val database = databaseName.getOrElse("")
-    val url = s"jdbc:postgresql://localhost:5432/$database"
-    val props = new Properties()
-    props.setProperty("user", "peppo")
-    props.setProperty("password", "password")
-    DriverManager.getConnection(url, props)
-  }
-
-  private def selectAllTrakcs(): ResultSet = {
+  private def selectTrack(trackId: Int): ResultSet = {
     val statement = postgres.createStatement()
-    statement.executeQuery("select * from tracks;")
+    val resultSet = statement.executeQuery(s"select * from tracks where trackId = $trackId;")
+    resultSet.next()
+    resultSet
   }
 
 }
