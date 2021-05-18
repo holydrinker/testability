@@ -7,27 +7,26 @@ import java.sql.{Connection, ResultSet}
 trait TrackRebuildSupport {
 
   def tracksFromEvents(
-      events: Seq[ListenEvent],
-      postgres: Connection
+      events: Seq[ListenEvent]
   ): Seq[Track] = {
 
     events
       .map {
         case ListenEvent(trackId, _, _) =>
-          val completeTrack = selectTrack(trackId, postgres)
-          val title = completeTrack.getString("title")
-          val artist = completeTrack.getString("artist")
-          Track(trackId, title, artist)
+          TrackRepository.getTrack(trackId)
       }
-
   }
+}
 
-  private def selectTrack(trackId: Int, postgres: Connection): ResultSet = {
+object TrackRepository extends PostgresConnection {
+
+  def getTrack(trackId: Int): Track = {
     val statement = postgres.createStatement()
     val resultSet =
       statement.executeQuery(s"select * from tracks where trackId = $trackId;")
     resultSet.next()
-    resultSet
+    val title = resultSet.getString("title")
+    val artist = resultSet.getString("artist")
+    Track(trackId, title, artist)
   }
-
 }
