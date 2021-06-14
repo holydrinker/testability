@@ -1,6 +1,5 @@
 package holydrinker.testability
 
-import com.typesafe.config.ConfigFactory
 import holydrinker.testability.core.TrackService
 import holydrinker.testability.models.{ListenEvent, Track}
 import holydrinker.testability.repository.TrackRepository
@@ -22,14 +21,9 @@ class TrackServiceSuite extends AnyFunSuite {
       override def getTrack(trackId: Int): Track = Track(trackId, trackName, artistName)
     }
 
-    val config = ConfigFactory.parseString(
-      """
-        |ignoreList = [
-        |    "foo fighters"
-        |]
-        |""".stripMargin)
+    val ignoreList = Seq("foo fighters")
 
-    val actual = TrackService.rebuildLongTrack(events, minSeconds = 10, trackRepository, config)
+    val actual = TrackService.rebuildLongTrack(events, minSeconds = 10, trackRepository, ignoreList)
 
     val expected = Seq.empty[Track]
 
@@ -50,12 +44,9 @@ class TrackServiceSuite extends AnyFunSuite {
       override def getTrack(trackId: Int): Track = Track(trackId, trackName, artistName)
     }
 
-    val config = ConfigFactory.parseString(
-      """
-        |ignoreList = []
-        |""".stripMargin)
+    val ignoreList = Seq.empty[String]
 
-    val actual = TrackService.rebuildLongTrack(events, minSeconds = 10, trackRepository, config)
+    val actual = TrackService.rebuildLongTrack(events, minSeconds = 10, trackRepository, ignoreList)
 
     val expected = Seq(
       Track(1000, trackName, artistName)
