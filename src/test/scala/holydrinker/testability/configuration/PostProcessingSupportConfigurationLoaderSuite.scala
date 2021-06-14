@@ -3,7 +3,7 @@ package holydrinker.testability.configuration
 import com.typesafe.config.ConfigFactory
 import org.scalatest.funsuite.AnyFunSuite
 
-class IgnoreListLoaderSuite extends AnyFunSuite with IgnoreListLoader {
+class PostProcessingSupportConfigurationLoaderSuite extends AnyFunSuite with PostProcessingSupportConfigurationLoader {
 
   test("non empty list"){
 
@@ -14,9 +14,9 @@ class IgnoreListLoaderSuite extends AnyFunSuite with IgnoreListLoader {
         |]
         |""".stripMargin)
 
-    val actual = typesafeConfigToIgnoreList(config)
+    val actual = fromTypesafeConfig(config)
 
-    val expected = Seq("foo fighters")
+    val expected = PostProcessingInfo(Seq("foo fighters"))
 
     assert(actual == expected)
 
@@ -29,9 +29,9 @@ class IgnoreListLoaderSuite extends AnyFunSuite with IgnoreListLoader {
         |ignoreList = []
         |""".stripMargin)
 
-    val actual = typesafeConfigToIgnoreList(config)
+    val actual = fromTypesafeConfig(config)
 
-    val expected = Seq.empty[String]
+    val expected = PostProcessingInfo(Seq.empty[String])
 
     assert(actual == expected)
 
